@@ -30,22 +30,44 @@ const gameBoardFactory = (sizeOfBoard) => {
 
     return {
         board,
+
         placeShip([x, y]){
+
+            let ship_placed;
             this.board.forEach(row => {
+                console.log('these are the rows of arrays ', row)
                 row.forEach(obj => {
+                    console.log('these are the objects in rows', obj)
                     if(obj.box[0] === x && obj.box[1] === y){
-                        obj.ship = shipFactory(1, false, 0)
-                        console.log(obj)
-                        return obj
+                        if ('ship' in obj === false){
+                            obj.ship = shipFactory(1, false, 0)
+                            console.log(obj)
+                            ship_placed = 'placed ship'
+                            return obj
+                        }
+                        else if ('ship' in obj === true){
+                            ship_placed = 'already placed ship here'
+                            return console.log('ship already placed here')
+                        }
+                        
                     }
                 })
             })
-        }
+            return ship_placed
+        },
+
+        
     }
 }
 
-let player1 = gameBoardFactory(5)
+let player1 = gameBoardFactory(1)
+console.log(player1)
 player1.placeShip([0,0])
-console.log(player1.board[0][0])
+console.log(player1)
+player1.placeShip([0,0])
+
+
+
+
 
 module.exports = {shipFactory, gameBoardFactory}
