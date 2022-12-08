@@ -20,20 +20,20 @@ const shipFactory = (length, sunk, noOfHits) => {
 
 const gameBoardFactory = (sizeOfBoard) => {
    
-   let noOfShips;
-   let noOfSuccesfulHits; 
-   let missedHits = [] 
-   let board = []
-   for (let i = 0; i < sizeOfBoard; i++){
+    let noOfShips;
+    let noOfSuccesfulHits; 
+    let missedHits = [] 
+    let board = []
+
+    for (let i = 0; i < sizeOfBoard; i++){
     board[i] = []
-    for (let j = 0; j < sizeOfBoard; j++){
-        board[i][j] = {box: [i, j]}
+        for (let j = 0; j < sizeOfBoard; j++){
+            board[i][j] = {box: [i, j]}
+        }
     }
-   }
 
     return {
         board,
-
         placeShip([x, y]){
             // places a ship object at specified coordinates
             let ship_placed;
@@ -59,7 +59,6 @@ const gameBoardFactory = (sizeOfBoard) => {
             })
             return ship_placed
         },
-
         recieveAttack([x, y]){
             let state;
             this.board.forEach(row => {
@@ -81,7 +80,6 @@ const gameBoardFactory = (sizeOfBoard) => {
             this.checkShipStatus()
             return state
         },
-
         checkShipStatus(){
             if (this.noOfShips > 0 && this.noOfSuccesfulHits == this.noOfShips){
                 console.log('All ships sunk')
@@ -93,10 +91,21 @@ const gameBoardFactory = (sizeOfBoard) => {
     }
 }
 
-let player1 = gameBoardFactory(1)
+const playerFactory = (name) => {
+    let winner = false
 
-player1.recieveAttack([0,0])
+    return {
+        name,
+        winner
+    }
+}
+
+let player1 = gameBoardFactory(5)
+player1.placeShip([0,2])
+console.log(player1.board[0])
 
 
 
-module.exports = {shipFactory, gameBoardFactory}
+
+module.exports = {shipFactory, gameBoardFactory, playerFactory}
+
