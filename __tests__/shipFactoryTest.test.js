@@ -34,11 +34,25 @@ describe('gameBoardFactory Function',
                             isSunk: expect.any(Function)}})
             })
 
-            it('If ship is already placed at coordinates, return message stating so', () => {
+            test('If ship is already placed at coordinates, return message stating so', () => {
                 let board = project.gameBoardFactory(1)
                 board.placeShip([0,0])
                 expect(board.placeShip([0,0])).toBe('already placed ship here')
             })
 
+            test('recieveAttack() should register a hit if a ship is placed at coordinates', () => {
+                let board = project.gameBoardFactory(1)
+                board.placeShip([0,0])
+                expect(board.recieveAttack([0,0])).toBe(1)
+            })
+
+            test('recieveAttack() should return msg if no ship at coordinates', () => {
+                let board = project.gameBoardFactory(1)
+                expect(board.recieveAttack([0,0])).toStrictEqual([[0,0]])
+                
+            })
+
+            
     })
+
 
