@@ -56,7 +56,7 @@ describe('gameBoardFactory Function',
 describe('playerFactory Function', () => {
     
     it('should return a player object', () => {
-        let player1 = project.playerFactory('player 1', project.gameBoardFactory(1))
+        let player1 = project.playerFactory('player 1')
         expect(player1).toMatchObject(
             {
                 name: 'player 1',
@@ -64,8 +64,23 @@ describe('playerFactory Function', () => {
 
         })
     })
+    
+})
 
+describe('aiFactory function,', () => {
+    it('should return a computer player object', () => {
+        let ai = project.aiFactory('computer')
+        expect(ai).toMatchObject({
+            name: 'computer',
+            winner: false
+        })
+    })
 
 })
 
-
+describe('mainGameFunction', () => {
+    
+    it('should return an object with two players, two gameboards', () => {
+        
+    })
+})
