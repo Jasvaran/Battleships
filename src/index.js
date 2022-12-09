@@ -24,6 +24,7 @@ const gameBoardFactory = (sizeOfBoard) => {
     let noOfSuccesfulHits; 
     let missedHits = [] 
     let board = []
+    let allShipsSunk = false
 
     for (let i = 0; i < sizeOfBoard; i++){
     board[i] = []
@@ -87,7 +88,8 @@ const gameBoardFactory = (sizeOfBoard) => {
         },
         missedHits,
         noOfShips,
-        noOfSuccesfulHits
+        noOfSuccesfulHits,
+        allShipsSunk
     }
 }
 
@@ -100,12 +102,37 @@ const playerFactory = (name) => {
     }
 }
 
+const aiFactory = (name) => {
+    let winner = false
+    return {
+        name,
+        winner,  
+    }
+}
+
+const mainGameFunction = () => {
+    let player1 = playerFactory('player 1')
+    let player2 = playerFactory('player 2')
+
+    let player_1_board = gameBoardFactory(5)
+    let player_2_board = gameBoardFactory(5)
+
+    return { 
+        player1,
+        player2,
+        player_1_board,
+        player_2_board
+    }
+}
+
 let player1 = gameBoardFactory(5)
 player1.placeShip([0,2])
 console.log(player1.board[0])
 
+console.log(mainGameFunction())
 
 
 
-module.exports = {shipFactory, gameBoardFactory, playerFactory}
+
+module.exports = {shipFactory, gameBoardFactory, playerFactory, aiFactory}
 
