@@ -52,8 +52,21 @@ function checkMoves(attackCoordinates, moves){
     return contains
 
 }
-function recieveInput(history){
+function recieveInput(){
+    let valid_ans = false
+    while (!valid_ans){
+        let input = prompt('enter coordinates')
 
+        if (checkHistory(input, pastMoves) == false && checkMoves(input, possibleMoves) == true){
+            alert('valid')
+            valid_ans = true
+            return input
+        }
+        else if (checkHistory(input, pastMoves) == true || checkMoves(input, possibleMoves) == false){
+            console.log('must make valid move')
+            continue
+        }
+    }
 }
 
 console.log(checkHistory(attack, pastMoves))

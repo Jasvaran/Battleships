@@ -84,6 +84,7 @@ const gameBoardFactory = (sizeOfBoard) => {
         checkShipStatus(){
             if (this.noOfShips > 0 && this.noOfSuccesfulHits == this.noOfShips){
                 console.log('All ships sunk')
+                this.allShipsSunk = true
             }
         },
         missedHits,
@@ -110,13 +111,7 @@ const aiFactory = (name) => {
     }
 }
 
-function valid(gameBoard){
-    let gameBoardSize = gameBoard.board.length
-
-}
-
 const mainGameFunction = () => {
-    let x = 0
     let gameStart = true
     let player1_turn = true
     let player2_turn = false
@@ -172,6 +167,7 @@ const mainGameFunction = () => {
                 let input = prompt(player.name + ' enter coordinates')
                 if(this.checkHistory(input, history) == false && this.checkMoves(input, validMoves) == true){
                     alert('valid')
+                    history.push(input)
                     valid_ans = true
                     result = input
                     return input
@@ -183,31 +179,37 @@ const mainGameFunction = () => {
             }
             return result
         },
-        takeTurn(playerBoard, history, player){
-
+        registerTurn(playerBoard, attackInput){
+            let arr = [];
+            let x = parseInt(attackInput[1]);
+            let y = parseInt(attackInput[3]);
+            arr.push(x, y);
+            playerBoard.recieveAttack(arr);
+            console.log(playerBoard.board)
             },
         makeMoves(){
             while(gameStart === true){
                 if(player1_turn == true){
                     console.log('player 1 turn')
                     let input = this.recieveInput(player1, player2_history)
+                    this.registerTurn(player_2_board, input)
                     console.log(input)
                     player1_turn = false
                     player2_turn = true
                 }
                 else if (player2_turn == true){
                     console.log('player 2 turn')
-                    let input = this.recieveInput(player2, player2_history)
+                    let input = this.recieveInput(player2, player1_history)
+                    this.registerTurn(player_1_board, input)
                     console.log(input)
                     player2_turn = false
                     player1_turn = true
                 }
-                x++
-                this.stop()
+                this.endGame(player_1_board, player_2_board)
             }
         },
-        stop(){
-            if(x === 2){
+        endGame(player1Board, player2Board){
+            if (player1Board.allShipsSunk == true || player2Board.allShipsSunk == true){
                 gameStart = false
             }
         }
