@@ -82,5 +82,46 @@ describe('mainGameFunction', () => {
     
     it('should return an object with two players, two gameboards', () => {
         
+        let game = project.mainGameFunction()
+        expect(game).toMatchObject(
+            {
+                player1 : {
+                    name: 'player 1',
+                    winner: false
+                },
+
+                player2: {
+                    name: 'player 2',
+                    winner: false
+                },
+
+                player_1_board: expect.any(Object),
+                player_2_board: expect.any(Object)
+            }
+        )
     })
+
+    test('runGame function should let player attack coordinates', () => {
+        let gameStart = true
+        let player1_turn = true
+        let player2_turn = false
+    
+        let player1_history = []
+        let player2_history = []
+    
+        let player1 = playerFactory('player 1')
+        let player2 = playerFactory('player 2')
+    
+        let player_1_board = gameBoardFactory(2)
+        let player_2_board = gameBoardFactory(2)
+        player_1_board.placeShip([0,0])
+        player_1_board.placeShip([1,1])
+        player_2_board.placeShip([0,1])
+        player_2_board.placeShip([1,0])
+
+        
+
+    })
+
+    it('should not proceed if the coordinates have been attacked before')
 })

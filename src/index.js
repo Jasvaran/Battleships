@@ -20,8 +20,8 @@ const shipFactory = (length, sunk, noOfHits) => {
 
 const gameBoardFactory = (sizeOfBoard) => {
    
-    let noOfShips;
-    let noOfSuccesfulHits; 
+    let noOfShips = 0
+    let noOfSuccesfulHits = 0 
     let missedHits = [] 
     let board = []
     let allShipsSunk = false
@@ -47,7 +47,7 @@ const gameBoardFactory = (sizeOfBoard) => {
                             obj.ship = shipFactory(1, false, 0)
                             // console.log(obj)
                             ship_placed = 'placed ship'
-                            noOfShips++
+                            this.noOfShips++
                             return obj
                         }
                         else if ('ship' in obj === true){
@@ -66,14 +66,14 @@ const gameBoardFactory = (sizeOfBoard) => {
                 row.forEach(obj => {
                     if (obj.box[0] === x && obj.box[1] === y && 'ship' in obj === true){
                         obj.ship.hitShip()
-                        noOfSuccesfulHits++
+                        this.noOfSuccesfulHits++
                         state = obj.ship.noOfHits
                         console.log('hit ship')
                         console.log(obj)
                     }
                     else if(obj.box[0] === x && obj.box[1] === y && 'ship' in obj === false){
                         console.log('missed ship')
-                        missedHits.push([x, y])
+                        this.missedHits.push([x, y])
                         state = missedHits
                     }
                 })
@@ -110,29 +110,114 @@ const aiFactory = (name) => {
     }
 }
 
+function valid(gameBoard){
+    let gameBoardSize = gameBoard.board.length
+
+}
+
 const mainGameFunction = () => {
+    let x = 0
+    let gameStart = true
+    let player1_turn = true
+    let player2_turn = false
+
+    let player1_history = []
+    let player2_history = []
+
+    let validMoves = []
+
+
     let player1 = playerFactory('player 1')
     let player2 = playerFactory('player 2')
 
-    let player_1_board = gameBoardFactory(5)
-    let player_2_board = gameBoardFactory(5)
+    let player_1_board = gameBoardFactory(2)
+    let player_2_board = gameBoardFactory(2)
+    player_1_board.placeShip([0,0])
+    player_1_board.placeShip([1,1])
+    player_2_board.placeShip([0,1])
+    player_2_board.placeShip([1,0])
+
+    // for loop takes all the available moves and puts them in
+    // an array as string arrays. 
+    for (let i = 0; i < player_1_board.board.length; i++){
+        player_1_board.board[i].forEach(obj => {
+            let values = JSON.stringify(obj.box)
+            validMoves.push(values)
+        })
+    }
+
 
     return { 
         player1,
         player2,
         player_1_board,
-        player_2_board
+        player_2_board,
+        player2_history,
+        player1_turn,
+        player2_turn,
+        checkMoves(attackCoordinates, moves){
+            let contains = moves.some(item => item === attackCoordinates)
+            return contains
+        },
+        checkHistory(attackCoordinates, playerHistory){
+            // let item = JSON.stringify(attackCoordinates)
+            let contains = playerHistory.some(ele => ele === attackCoordinates)
+            return contains
+
+        },
+        recieveInput(player, history){
+            let result;
+            let valid_ans = false
+            while(!valid_ans){
+                let input = prompt(player.name + ' enter coordinates')
+                if(this.checkHistory(input, history) == false && this.checkMoves(input, validMoves) == true){
+                    alert('valid')
+                    valid_ans = true
+                    result = input
+                    return input
+                }
+                else if (this.checkHistory(input, history) == true || this.checkMoves(input, validMoves) == false){
+                    alert('must make valid move')
+                    continue
+                }
+            }
+            return result
+        },
+        takeTurn(playerBoard, history, player){
+
+            },
+        makeMoves(){
+            while(gameStart === true){
+                if(player1_turn == true){
+                    console.log('player 1 turn')
+                    let input = this.recieveInput(player1, player2_history)
+                    console.log(input)
+                    player1_turn = false
+                    player2_turn = true
+                }
+                else if (player2_turn == true){
+                    console.log('player 2 turn')
+                    let input = this.recieveInput(player2, player2_history)
+                    console.log(input)
+                    player2_turn = false
+                    player1_turn = true
+                }
+                x++
+                this.stop()
+            }
+        },
+        stop(){
+            if(x === 2){
+                gameStart = false
+            }
+        }
     }
 }
-
-let player1 = gameBoardFactory(5)
-player1.placeShip([0,2])
-console.log(player1.board[0])
-
-console.log(mainGameFunction())
+let m = mainGameFunction()
+m.makeMoves()
+console.log(m.validMoves)
 
 
 
-
-module.exports = {shipFactory, gameBoardFactory, playerFactory, aiFactory}
+module.exports = {shipFactory, gameBoardFactory, playerFactory, aiFactory, mainGameFunction}
 
