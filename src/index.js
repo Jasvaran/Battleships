@@ -69,7 +69,6 @@ const gameBoardFactory = (sizeOfBoard) => {
                         this.noOfSuccesfulHits++
                         state = obj.ship.noOfHits
                         console.log('hit ship')
-                        console.log(obj)
                     }
                     else if(obj.box[0] === x && obj.box[1] === y && 'ship' in obj === false){
                         console.log('missed ship')
@@ -151,10 +150,12 @@ const mainGameFunction = () => {
         player1_turn,
         player2_turn,
         checkMoves(attackCoordinates, moves){
+            // check if moves can be made in terms of possible coordinates to choose from
             let contains = moves.some(item => item === attackCoordinates)
             return contains
         },
         checkHistory(attackCoordinates, playerHistory){
+            // check if player already made a move to that coordinate
             // let item = JSON.stringify(attackCoordinates)
             let contains = playerHistory.some(ele => ele === attackCoordinates)
             return contains
@@ -187,11 +188,11 @@ const mainGameFunction = () => {
             playerBoard.recieveAttack(arr);
             console.log(playerBoard.board)
             },
-        makeMoves(){
+        async makeMoves(){
             while(gameStart === true){
                 if(player1_turn == true){
                     console.log('player 1 turn')
-                    let input = this.recieveInput(player1, player2_history)
+                    let input = await this.getConsoleInput(player1, player2_history)
                     this.registerTurn(player_2_board, input)
                     console.log(input)
                     player1_turn = false
@@ -199,7 +200,7 @@ const mainGameFunction = () => {
                 }
                 else if (player2_turn == true){
                     console.log('player 2 turn')
-                    let input = this.recieveInput(player2, player1_history)
+                    let input = await this.getConsoleInput(player2, player1_history)
                     this.registerTurn(player_1_board, input)
                     console.log(input)
                     player2_turn = false
@@ -212,12 +213,38 @@ const mainGameFunction = () => {
             if (player1Board.allShipsSunk == true || player2Board.allShipsSunk == true){
                 gameStart = false
             }
-        }
+        },
+        consoleInput(query){
+            const readline = require('readline')
+            var rl = readline.createInterface(process.stdin, process.stdout)
+            return new Promise(resolve => {
+              rl.question(query, (input) => {
+                rl.close()
+                resolve(input)
+              })
+            })
+          },
+        async getConsoleInput(player, history){
+            let valid_ans = false
+            while(!valid_ans){
+              let result = await this.consoleInput(player.name + ' Enter coordinates to attack ')
+              if(this.checkHistory(result, history) == false && this.checkMoves(result, validMoves) == true){
+                console.log('valid')
+                history.push(result)
+                valid_ans = true
+                return result
+              }
+            else if (this.checkHistory(result, history) == true || this.checkMoves(result, validMoves) == false){
+                console.log('must make valid move')
+                continue
+              }
+            }
+            return result
+          }   
     }
 }
 let m = mainGameFunction()
 m.makeMoves()
-console.log(m.validMoves)
 
 
 
