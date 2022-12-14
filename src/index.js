@@ -1,3 +1,4 @@
+const dom = require('./dom')
 const shipFactory = (length, sunk, noOfHits) => {
     
     function hitShip(){
@@ -188,11 +189,11 @@ const mainGameFunction = () => {
             playerBoard.recieveAttack(arr);
             console.log(playerBoard.board)
             },
-        async makeMoves(){
+        makeMoves(){
             while(gameStart === true){
                 if(player1_turn == true){
                     console.log('player 1 turn')
-                    let input = await this.getConsoleInput(player1, player2_history)
+                    let input = this.recieveInput(player1, player2_history)
                     this.registerTurn(player_2_board, input)
                     console.log(input)
                     player1_turn = false
@@ -200,7 +201,7 @@ const mainGameFunction = () => {
                 }
                 else if (player2_turn == true){
                     console.log('player 2 turn')
-                    let input = await this.getConsoleInput(player2, player1_history)
+                    let input = this.recieveInput(player2, player1_history)
                     this.registerTurn(player_1_board, input)
                     console.log(input)
                     player2_turn = false
@@ -214,39 +215,38 @@ const mainGameFunction = () => {
                 gameStart = false
             }
         },
-        consoleInput(query){
-            const readline = require('readline')
-            var rl = readline.createInterface(process.stdin, process.stdout)
-            return new Promise(resolve => {
-              rl.question(query, (input) => {
-                rl.close()
-                resolve(input)
-              })
-            })
-          },
-        async getConsoleInput(player, history){
-            let valid_ans = false
-            while(!valid_ans){
-              let result = await this.consoleInput(player.name + ' Enter coordinates to attack ')
-              if(this.checkHistory(result, history) == false && this.checkMoves(result, validMoves) == true){
-                console.log('valid')
-                history.push(result)
-                valid_ans = true
-                return result
-              }
-            else if (this.checkHistory(result, history) == true || this.checkMoves(result, validMoves) == false){
-                console.log('must make valid move')
-                continue
-              }
-            }
-            return result
-          }   
+        // consoleInput(query){
+        //     const readline = require('readline')
+        //     var rl = readline.createInterface(process.stdin, process.stdout)
+        //     return new Promise(resolve => {
+        //       rl.question(query, (input) => {
+        //         rl.close()
+        //         resolve(input)
+        //       })
+        //     })
+        //   },
+        // async getConsoleInput(player, history){
+        //     let valid_ans = false
+        //     while(!valid_ans){
+        //       let result = await this.consoleInput(player.name + ' Enter coordinates to attack ')
+        //       if(this.checkHistory(result, history) == false && this.checkMoves(result, validMoves) == true){
+        //         console.log('valid')
+        //         history.push(result)
+        //         valid_ans = true
+        //         return result
+        //       }
+        //     else if (this.checkHistory(result, history) == true || this.checkMoves(result, validMoves) == false){
+        //         console.log('must make valid move')
+        //         continue
+        //       }
+        //     }
+        //     return result
+        //   }   
     }
 }
 let m = mainGameFunction()
 m.makeMoves()
-
+dom.createGrids()
 
 
 module.exports = {shipFactory, gameBoardFactory, playerFactory, aiFactory, mainGameFunction}
-
