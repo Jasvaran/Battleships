@@ -245,8 +245,8 @@ const mainGameFunction = () => {
     }
 }
 let m = mainGameFunction()
-m.makeMoves()
-dom.createGrids()
+// m.makeMoves()
+dom.createGrids(5,5)
 
 
 module.exports = {shipFactory, gameBoardFactory, playerFactory, aiFactory, mainGameFunction}
