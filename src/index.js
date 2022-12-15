@@ -246,7 +246,12 @@ const mainGameFunction = () => {
 }
 let m = mainGameFunction()
 // m.makeMoves()
-dom.createGrids(5,5)
+let gb = gameBoardFactory(2)
+dom.createGrids(2,2)
+dom.createCoordinateArray(gb);
+dom.dataTest()
+
+
 
 
 module.exports = {shipFactory, gameBoardFactory, playerFactory, aiFactory, mainGameFunction}
