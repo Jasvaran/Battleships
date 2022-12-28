@@ -1,5 +1,100 @@
+import * as mainGameModule from './index'
+
 let player1_container = document.querySelector('.player-1-content')
 let player2_container = document.querySelector('.player-2-content')
+const startGame = document.querySelector('.start-game')
+const notifyDom = document.querySelector('.notify')
+const submitBtn = document.querySelector('.submit')
+const inputBar = document.querySelector('#attack')
+
+let gameStarted = false
+
+// click start game
+// create grids on screen
+startGame.addEventListener('click', async function()  {
+    if (gameStarted == false){
+        gameStarted = true
+        let main = mainGameModule.mainGameFunction()
+        createGrids(2,2)
+        assignCellsToPlayerBoards(main)
+        console.log(main)
+        await setPlayerOneShips(main)
+        setPlayerTwoShips(main)
+    }
+    else if (gameStarted == true){
+        alert('game in progress')
+    }
+
+})
+
+// ask player1 to assign his ships
+async function setPlayerOneShips(mainGameFn){
+    let history = []
+    for (let i = 0; i < 2; i++){
+        notifyDom.innerHTML = `Player 1 assign ship ${i + 1}`
+        let valid_ans = false
+        while(!valid_ans){
+            let getinput = await input()
+            if (mainGameFn.validMoves.some(ele => ele === getinput) && !history.includes(getinput)){
+                let coords = []
+                let x = parseInt(getinput[1])
+                let y = parseInt(getinput[3])
+                coords.push(x, y)
+                mainGameFn.player_1_board.placeShip(coords)
+                mainGameFn.player_1_board.manipulateDom(coords)
+                history.push(getinput)
+                console.log(mainGameFn.player_1_board)
+
+                valid_ans = true
+            }
+            else {
+                alert('Example: \'[0,0]\' // cannot place multiple ships in same coordinates')
+            }
+        }
+    }
+    notifyDom.innerHTML = "";
+}
+
+function input(){
+    return new Promise((resolve) => {
+        submitBtn.onclick = function (){
+            let input = inputBar.value
+            inputBar.value = "";
+            resolve(input)
+        }
+    })
+}
+
+
+// assign player2 ships
+
+function setPlayerTwoShips(mainGameFn){
+    const valid_coords = mainGameFn.validMoves
+    let history = []
+    
+    for (let i = 0; i < 2; i++){
+        const randomCoord = valid_coords[Math.floor(Math.random() * valid_coords.length)]
+        if (!history.includes(randomCoord)){
+            let coords = []
+            let x = parseInt(randomCoord[1])
+            let y = parseInt(randomCoord[3])
+            coords.push(x, y)
+            mainGameFn.player_2_board.placeShip(coords)
+            mainGameFn.player_2_board.manipulateDom(coords)
+            history.push(randomCoord)
+            console.log(mainGameFn.player_2_board)
+        }
+        else {
+            continue
+        }
+    }
+
+}
+
+
+// when all ships are assigned start to make Moves
+
+
 
 
 function createGrids(rows, cols){    
@@ -19,9 +114,12 @@ function createGrids(rows, cols){
 
     player1_container.appendChild(container[0])
     player2_container.appendChild(container[1])
+    let referenceBoard = mainGameModule.gameBoardFactory(2)
+    createCoordinateArray(referenceBoard)
 }
 
 function createCoordinateArray(gameboard){
+    // creates coordinates to assign to each cells data attribute and inner HTML
     let cellList = document.querySelectorAll('.grid-item')
     let coords = [];
     gameboard.board.forEach(arr => {
@@ -29,22 +127,43 @@ function createCoordinateArray(gameboard){
             coords.push(obj.box)
         })
     })
+
+    let cell_list_array = Array.from(cellList)
+    const middleIndex = Math.ceil(cell_list_array.length / 2)
+    const firstHalf = cell_list_array.splice(0, middleIndex)
+    const secondHalf = cell_list_array.splice(-middleIndex)
+
+    const split_array = []
+    split_array.push(firstHalf, secondHalf)
+
     
-    cellList.forEach((cell, index) => {
-        cell.setAttribute('data-key', `[${coords[index]}]`)
+    split_array.forEach(array => {
+        array.forEach((cell, index) => {
+            cell.setAttribute('data-key', `[${coords[index]}]`)
+            cell.setAttribute('data-ship', false)
+            cell.innerHTML = `[${coords[index]}]` 
+        })
     })
 }
 
-function dataTest(){
-    let cellList = document.querySelector('#test')
-    console.log(cellList.dataset.key === 'testing')
+function assignCellsToPlayerBoards(gameBoard){
+    let cellList = document.querySelectorAll('.grid-item')
+    let cell_list_array = Array.from(cellList)
+    const middleIndex = Math.ceil(cell_list_array.length / 2)
+    const firstHalf = cell_list_array.splice(0, middleIndex)
+    const secondHalf = cell_list_array.splice(-middleIndex)
+
+    gameBoard.player_1_board.gridItems = firstHalf
+    gameBoard.player_2_board.gridItems = secondHalf
+
 
 }
 
 
-module.exports = {
+
+
+export {
     createGrids,
     player1_container,
     createCoordinateArray,
-    dataTest
 }

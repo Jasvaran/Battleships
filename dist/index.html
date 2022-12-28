@@ -13,22 +13,33 @@
         <div class="header-container">
             <div class="title-container">
                 <h1>Battleships</h1>
+                <button class="start-game">Start Game</button>
             </div>
+            <p class="notify"></p>
             <div class="attack-input-container">
                 <label for="attack">Attack</label>
                 <input type="text" name="attack" id="attack">
+                <button class="submit">Submit</button>
             </div>
-            <div class="test" id="test" data-key="testing"></div>
         </div>
 
         <div class="player-1-content">
             <h1>player 1</h1>
             <div class="player-1-grid" id="main-grid"></div>
+            <div class="p1-hit-tracking">
+                <p id="p1-missed">Missed Hits: </p>
+                <p id="p1-success">Succesfull Hits: </p>
+            </div>
         </div>
+
 
         <div class="player-2-content">
             <h1>player 2</h1>
             <div class="player-2-grid" id="main-grid"></div>
+            <div class="p2-hit-tracking">
+                <p id="p2-missed">Missed Hits: </p>
+                <p id="p2-succes">Succesful Hits: </p>
+            </div>
         </div>
 
 

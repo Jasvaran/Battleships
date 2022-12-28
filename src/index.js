@@ -1,4 +1,5 @@
-const dom = require('./dom')
+import * as dom from './dom'
+
 const shipFactory = (length, sunk, noOfHits) => {
     
     function hitShip(){
@@ -27,6 +28,7 @@ const gameBoardFactory = (sizeOfBoard) => {
     let board = []
     let allShipsSunk = false
 
+
     for (let i = 0; i < sizeOfBoard; i++){
     board[i] = []
         for (let j = 0; j < sizeOfBoard; j++){
@@ -36,6 +38,19 @@ const gameBoardFactory = (sizeOfBoard) => {
 
     return {
         board,
+        manipulateDom([x,y]){
+            // sets cells data ship attribute to true when ship is placed in it.
+            if (this.gridItems){
+                let coord = JSON.stringify([x,y])
+                console.log(coord)
+                this.gridItems.forEach(cell => {
+                    if (cell.dataset.key === coord){
+                        cell.dataset.ship = true
+                        cell.style.color = 'red'
+                    }
+                })
+            }
+        },
         placeShip([x, y]){
             // places a ship object at specified coordinates
             let ship_placed;
@@ -119,6 +134,9 @@ const mainGameFunction = () => {
     let player1_history = []
     let player2_history = []
 
+    let p1_shipsReady = false
+    let p2_shipsReady = false
+
     let validMoves = []
 
 
@@ -127,10 +145,9 @@ const mainGameFunction = () => {
 
     let player_1_board = gameBoardFactory(2)
     let player_2_board = gameBoardFactory(2)
-    player_1_board.placeShip([0,0])
-    player_1_board.placeShip([1,1])
-    player_2_board.placeShip([0,1])
-    player_2_board.placeShip([1,0])
+    player_1_board.ai = false
+    player_2_board.ai = true
+
 
     // for loop takes all the available moves and puts them in
     // an array as string arrays. 
@@ -150,6 +167,9 @@ const mainGameFunction = () => {
         player2_history,
         player1_turn,
         player2_turn,
+        validMoves,
+        p1_shipsReady,
+        p2_shipsReady,
         checkMoves(attackCoordinates, moves){
             // check if moves can be made in terms of possible coordinates to choose from
             let contains = moves.some(item => item === attackCoordinates)
@@ -246,12 +266,10 @@ const mainGameFunction = () => {
 }
 let m = mainGameFunction()
 // m.makeMoves()
-let gb = gameBoardFactory(2)
-dom.createGrids(2,2)
-dom.createCoordinateArray(gb);
-dom.dataTest()
 
 
 
 
-module.exports = {shipFactory, gameBoardFactory, playerFactory, aiFactory, mainGameFunction}
+
+
+export {shipFactory, gameBoardFactory, playerFactory, aiFactory, mainGameFunction}
