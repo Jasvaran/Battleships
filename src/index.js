@@ -24,7 +24,8 @@ const gameBoardFactory = (sizeOfBoard) => {
    
     let noOfShips = 0
     let noOfSuccesfulHits = 0 
-    let missedHits = [] 
+    let missedHits = []
+    let successHits = [] 
     let board = []
     let allShipsSunk = false
 
@@ -45,8 +46,14 @@ const gameBoardFactory = (sizeOfBoard) => {
                 console.log(coord)
                 this.gridItems.forEach(cell => {
                     if (cell.dataset.key === coord){
+                        let boatImg = document.createElement('img')
+                        boatImg.setAttribute('src', '../images/battleship.svg')
+                        boatImg.setAttribute('class', 'battleship')
+                        cell.appendChild(boatImg)
+
                         cell.dataset.ship = true
                         cell.style.color = 'red'
+                        console.log(cell)
                     }
                 })
             }
@@ -76,23 +83,43 @@ const gameBoardFactory = (sizeOfBoard) => {
             })
             return ship_placed
         },
+        colorSquare(coordinates){
+            if (this.gridItems){
+                this.gridItems.forEach(cell => {
+                    if (cell.dataset.key === coordinates){
+                        cell.style.backgroundColor = 'grey'
+                    }
+                })
+            }
+        },
         recieveAttack([x, y]){
+
+            // turn coord to string to save missed hits and successful hits in array to display later
+            let coord = [x, y]
+            let coordToString = JSON.stringify(coord)
+            //
+            
+
             let state;
             this.board.forEach(row => {
                 row.forEach(obj => {
                     if (obj.box[0] === x && obj.box[1] === y && 'ship' in obj === true){
                         obj.ship.hitShip()
                         this.noOfSuccesfulHits++
+                        this.successHits.push(coordToString)
+                        this.pushHits(coordToString)
                         state = obj.ship.noOfHits
                         console.log('hit ship')
                     }
                     else if(obj.box[0] === x && obj.box[1] === y && 'ship' in obj === false){
                         console.log('missed ship')
-                        this.missedHits.push([x, y])
+                        this.pushMisses(coordToString)
                         state = missedHits
                     }
                 })
             })
+
+            this.colorSquare(coordToString)
             this.checkShipStatus()
             return state
         },
@@ -102,12 +129,44 @@ const gameBoardFactory = (sizeOfBoard) => {
                 this.allShipsSunk = true
             }
         },
+        renderMisses(missedHitSelector){
+            this.missedHits.forEach(coord => {
+                if (!missedHitSelector.textContent.includes(coord)){
+                    missedHitSelector.textContent += `${coord}, `
+                }
+            })
+        },
+        pushMisses(coord){
+            if (coord in this.missedHits == false){
+                this.missedHits.push(coord)
+            }
+            else if (coord in this.missedHits == true){
+                return
+            } 
+        },
+        pushHits(coord){
+            if (coord in this.successHits == false){
+                this.successHits.push(coord)
+            }
+            else if (coord in this.successHits == true){
+                return
+            }
+        },
+        renderHits(successHitsSelector){
+            this.successHits.forEach(coord => {
+                if (!successHitsSelector.textContent.includes(coord)){
+                    successHitsSelector.textContent += `${coord}, `
+                }
+            })
+        },
         missedHits,
         noOfShips,
         noOfSuccesfulHits,
-        allShipsSunk
+        allShipsSunk,
+        successHits
     }
 }
+
 
 const playerFactory = (name) => {
     let winner = false
@@ -182,11 +241,11 @@ const mainGameFunction = () => {
             return contains
 
         },
-        recieveInput(player, history){
+        async recieveInput(history){
             let result;
             let valid_ans = false
             while(!valid_ans){
-                let input = prompt(player.name + ' enter coordinates')
+                let input = await dom.inputClick()
                 if(this.checkHistory(input, history) == false && this.checkMoves(input, validMoves) == true){
                     alert('valid')
                     history.push(input)
@@ -209,30 +268,46 @@ const mainGameFunction = () => {
             playerBoard.recieveAttack(arr);
             console.log(playerBoard.board)
             },
-        makeMoves(){
+        async makeMoves(){
             while(gameStart === true){
                 if(player1_turn == true){
                     console.log('player 1 turn')
-                    let input = this.recieveInput(player1, player2_history)
+                    // let input = this.recieveInput(player1, player2_history)
+                    dom.notifyDom.innerHTML = "Player 1 Enter Coordinates to attack"
+                    let input = await this.recieveInput(player2_history)
                     this.registerTurn(player_2_board, input)
+                    player_2_board.renderMisses(dom.domTracking.p2_missed)
+                    player_2_board.renderHits(dom.domTracking.p2_success)
                     console.log(input)
                     player1_turn = false
                     player2_turn = true
                 }
                 else if (player2_turn == true){
                     console.log('player 2 turn')
-                    let input = this.recieveInput(player2, player1_history)
+                    // let input = this.recieveInput(player2, player1_history)
+                    dom.notifyDom.innerHTML = "Player 2 Enter Coordinates to attack"
+                    let input = await this.recieveInput(player1_history)
                     this.registerTurn(player_1_board, input)
+                    player_1_board.renderMisses(dom.domTracking.p1_missed)
+                    player_1_board.renderHits(dom.domTracking.p1_success)
                     console.log(input)
                     player2_turn = false
                     player1_turn = true
                 }
+
                 this.endGame(player_1_board, player_2_board)
             }
         },
+
         endGame(player1Board, player2Board){
             if (player1Board.allShipsSunk == true || player2Board.allShipsSunk == true){
                 gameStart = false
+            }
+            if (player1Board.allShipsSunk == true){
+                alert('player 2 wins')
+            }
+            if (player2Board.allShipsSunk == true){
+                alert('player 1 wins')
             }
         },
         // consoleInput(query){

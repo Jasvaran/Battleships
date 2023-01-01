@@ -98,16 +98,21 @@ table {
 
 #main-grid {
     display: grid;
-    grid-gap: 1em;
+    height: 25%;
+    width: 25%;
     grid-template-rows: repeat(var(--grid-rows), 1fr);
     grid-template-columns: repeat(var(--grid-cols), 1fr);
     margin-top: 1rem;
+    border: 1px solid black;
 }
 
-.grid-cell {
-    padding: 1em;
-    border: 1px solid #ddd;
+.grid-item {
+    border: 1px solid black;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 .p1-hit-tracking {
@@ -126,4 +131,9 @@ table {
 
 #p2-missed {
     margin-bottom: 2rem;
+}
+
+.battleship {
+    height: 20px;
+    width: 20px;
 }
