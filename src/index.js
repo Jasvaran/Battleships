@@ -198,6 +198,8 @@ const mainGameFunction = () => {
 
     let validMoves = []
 
+    let aiMoveList = []
+
 
     let player1 = playerFactory('player 1')
     let player2 = playerFactory('player 2')
@@ -214,6 +216,7 @@ const mainGameFunction = () => {
         player_1_board.board[i].forEach(obj => {
             let values = JSON.stringify(obj.box)
             validMoves.push(values)
+            aiMoveList.push(values)
         })
     }
 
@@ -286,17 +289,26 @@ const mainGameFunction = () => {
                     console.log('player 2 turn')
                     // let input = this.recieveInput(player2, player1_history)
                     dom.notifyDom.innerHTML = "Player 2 Enter Coordinates to attack"
-                    let input = await this.recieveInput(player1_history)
-                    this.registerTurn(player_1_board, input)
+                    // let input = await this.recieveInput(player1_history)
+                    // this.registerTurn(player_1_board, input)
+                    this.aiMoves()
                     player_1_board.renderMisses(dom.domTracking.p1_missed)
                     player_1_board.renderHits(dom.domTracking.p1_success)
-                    console.log(input)
+                    // console.log(input)
                     player2_turn = false
                     player1_turn = true
                 }
 
                 this.endGame(player_1_board, player_2_board)
             }
+        },
+        aiMoves(){
+            let randomCoord = aiMoveList[Math.floor(Math.random() * validMoves.length)]
+            console.log(aiMoveList)
+            let i = aiMoveList.indexOf(randomCoord)
+            console.log(randomCoord)
+            this.registerTurn(player_1_board, randomCoord)
+            aiMoveList.pop(i)
         },
 
         endGame(player1Board, player2Board){
@@ -340,6 +352,7 @@ const mainGameFunction = () => {
     }
 }
 let m = mainGameFunction()
+m.aiMoves()
 // m.makeMoves()
 
 
